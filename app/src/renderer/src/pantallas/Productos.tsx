@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { achicarFoto, aEntero, api, gs, urlFoto } from '../api'
 import { Cifra, Encabezado, Etiqueta } from '../componentes'
 import Importar from '../Importar'
@@ -31,6 +31,7 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
   const [proveedor, setProveedor] = useState('')
   const [stock, setStock] = useState<'todo' | 'bajo' | 'sin'>('todo')
   const [importando, setImportando] = useState(false)
+  const formulario = useRef<HTMLFormElement>(null)
   // Foto del producto en edición: la guardada, y la elegida o quitada (se guarda al guardar).
   const [fotoGuardada, setFotoGuardada] = useState<string | null>(null)
   const [fotoNueva, setFotoNueva] = useState<string | null>(null)
@@ -108,6 +109,8 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
     })
     setEditandoId(id)
     setMensaje(null)
+    // Al elegir un producto de la lista, subir al formulario donde se cargaron sus datos.
+    formulario.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const miles = (n: number): string => (n ? n.toLocaleString('es-PY') : '')
@@ -174,7 +177,7 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
         </div>
       )}
       {esAdmin && (
-        <form className="tarjeta" onSubmit={guardar}>
+        <form ref={formulario} className="tarjeta" onSubmit={guardar}>
           <h2>{editandoId ? `Editar producto ${form.codigo}` : 'Registrar producto'}</h2>
           <div className="grilla">
             <label className="req">
