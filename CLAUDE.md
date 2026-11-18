@@ -29,7 +29,7 @@ Se carga solo al abrir Claude en esta carpeta. El detalle del pedido está en `R
 ## Cómo trabajar
 
 - Responder en **español con voseo**, conciso; ante una decisión, recomendar una opción.
-- Commit y push solo cuando se pide (todavía no hay repo).
+- Commit y push solo cuando se pide. Repo: `git@github.com:GonzaMS/Sistema-Ventas.git` (rama `main`).
 - Transcribir audios con `mlx_whisper` (en `~/.local/bin`): `--model mlx-community/whisper-large-v3-turbo --language es --output-name <nombre>` (sin `--output-name` corta el nombre en el primer punto y pisa archivos).
 - Node: `export PATH=~/.nvm/versions/node/v26.13.0/bin:$PATH`.
 - Código en `app/` (electron-vite). `npm run dev` para probar; `npm run typecheck`, `npm run lint` y `npm run pruebas` antes de cerrar (pruebas en `app/pruebas/`, una base en memoria por archivo).
