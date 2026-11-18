@@ -63,6 +63,7 @@ const handlers = {
   registrarCompra: compras.registrarCompra,
   listarCompras: compras.listarCompras,
   anularCompra: compras.anularCompra,
+  devolverCompra: compras.devolverCompra,
 
   datosNegocio: negocio.datosNegocio,
   configuracion: negocio.configuracion,

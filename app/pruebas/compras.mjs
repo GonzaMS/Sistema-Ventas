@@ -56,7 +56,7 @@ assert.equal(ef().esperado, 390000)
 const mov = k.cajaActual().movimientos[0]
 assert.equal(mov.categoria, 'Compra de mercadería')
 assert.equal(mov.compraId, c1.id)
-assert.throws(() => k.anularMovimiento(mov.id, 'x'), /anulá la compra/)
+assert.throws(() => k.anularMovimiento(mov.id, 'x'), /se corrige desde Compras/)
 assert.ok(!k.categoriasCaja().some((c) => c.nombre === 'Compra de mercadería' && !c.sistema))
 // transferencia
 compra([{ productoId: a.id, cantidad: 1, costo: 20000 }], 'transferencia')

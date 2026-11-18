@@ -93,6 +93,13 @@ Para lo que entra al local:
 
 Para mercadería conviene usar siempre Compras y no un gasto manual de "Mercadería": el gasto manual baja la caja pero **no suma stock**.
 
+**Devolver al proveedor una parte** (solo el admin): clic en la compra → **Devolver al proveedor…** → cantidad de cada producto, motivo y si el proveedor devuelve la plata.
+
+- Lo devuelto **sale del stock**. Si esas unidades ya se vendieron (no alcanza el stock), no se puede.
+- Vale lo que costó en esa compra (cantidad × costo).
+- Si el proveedor devuelve la plata, entra a la caja abierta como ingreso **"Devolución de compra"**, en el método que elijas. Si deja el monto a favor, o la compra no se pagó con la caja, se elige **"No entra plata a la caja"**.
+- Una compra con devoluciones ya no se anula entera: se devuelve lo que queda.
+
 ### 6. Otros ingresos y gastos (pestaña Caja)
 
 En "Registrar ingreso o egreso" se cargan las salidas de plata que no son compras de mercadería: encomiendas, bolsitas de regalo, alquiler, luz… y las entradas que no son ventas. Cada una lleva categoría, monto, método y una descripción. Las categorías se agregan, renombran o desactivan en Administración.

@@ -292,7 +292,7 @@ export function anularMovimiento(id: number, motivo: string): Caja {
   if (m.corrigeId !== null || m.cobroId !== null)
     throw new Error('Es una corrección de otro movimiento; no se anula')
   if (m.compraId !== null)
-    throw new Error(`Salió de la compra N° ${m.compraId}: anulá la compra en Compras`)
+    throw new Error(`Salió de la compra N° ${m.compraId}: se corrige desde Compras`)
   const abierta = exigirCajaAbierta()
   transaccion(getDb(), () => {
     revertirMovimiento(id, motivo.trim(), u.id)

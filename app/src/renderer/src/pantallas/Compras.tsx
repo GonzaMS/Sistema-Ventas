@@ -28,6 +28,8 @@ export default function Compras({ esAdmin }: { esAdmin: boolean }): React.JSX.El
   const [pago, setPago] = useState<Pago>('efectivo')
   const [observacion, setObservacion] = useState('')
   const [mensaje, setMensaje] = useState<Mensaje>(null)
+  const [devolviendo, setDevolviendo] = useState<number | null>(null)
+  const [aviso, setAviso] = useState('')
   const [caja, setCaja] = useState<Caja | null>(null)
   const [proveedores, setProveedores] = useState<string[]>([])
   const [historial, setHistorial] = useState<Compra[]>([])
@@ -300,6 +302,14 @@ export default function Compras({ esAdmin }: { esAdmin: boolean }): React.JSX.El
           <h2>Últimas compras</h2>
           <span>{cantidad(historial.filter((c) => !c.anulada).length, 'compra', 'compras')}</span>
         </div>
+        {aviso && (
+          <div className="fila-mensaje">
+            <p className="ok">{aviso}</p>
+            <button className="chico" onClick={() => setAviso('')}>
+              Listo
+            </button>
+          </div>
+        )}
         <table>
           <thead>
             <tr>
@@ -331,11 +341,15 @@ export default function Compras({ esAdmin }: { esAdmin: boolean }): React.JSX.El
                   <td>{c.usuario}</td>
                   <td className="num">{c.items.reduce((s, i) => s + i.cantidad, 0)}</td>
                   <td className="num">
-                    {c.anulada && <Etiqueta tono="rojo">Anulada</Etiqueta>} {gs(c.total)}
+                    {c.anulada && <Etiqueta tono="rojo">Anulada</Etiqueta>}
+                    {c.devuelto > 0 && !c.anulada && (
+                      <Etiqueta tono="ambar">Devuelto {gs(c.devuelto)}</Etiqueta>
+                    )}{' '}
+                    {gs(c.total)}
                   </td>
                   {esAdmin && (
                     <td className="num">
-                      {!c.anulada && (
+                      {!c.anulada && !c.devuelto && (
                         <button
                           className="chico peligro"
                           onClick={(e) => {
@@ -352,13 +366,42 @@ export default function Compras({ esAdmin }: { esAdmin: boolean }): React.JSX.El
                 {abierta === c.id && (
                   <tr className="detalle">
                     <td colSpan={esAdmin ? 8 : 7}>
-                      {c.items.map((it, i) => (
-                        <div key={i}>
+                      {c.items.map((it) => (
+                        <div key={it.id}>
                           {it.cantidad} × {it.codigo} {it.nombre} a {gs(it.costo)} ={' '}
                           {gs(it.subtotal)}
+                          {it.devueltos > 0 && (
+                            <strong> · devueltos al proveedor {it.devueltos}</strong>
+                          )}
                         </div>
                       ))}
                       {c.observacion && <div>Observación: {c.observacion}</div>}
+                      {devolviendo === c.id ? (
+                        <DevolverCompra
+                          compra={c}
+                          onCancelar={() => setDevolviendo(null)}
+                          onHecha={(d) => {
+                            setDevolviendo(null)
+                            setAviso(
+                              `Compra N° ${d.id}: se sacó del stock lo devuelto.` +
+                                (d.devuelto > c.devuelto
+                                  ? ` Valor devuelto en total: ${gs(d.devuelto)}.`
+                                  : '')
+                            )
+                            recargar()
+                          }}
+                        />
+                      ) : (
+                        esAdmin &&
+                        !c.anulada &&
+                        c.items.some((it) => it.cantidad > it.devueltos) && (
+                          <div className="acciones">
+                            <button className="chico" onClick={() => setDevolviendo(c.id)}>
+                              Devolver al proveedor…
+                            </button>
+                          </div>
+                        )
+                      )}
                     </td>
                   </tr>
                 )}
@@ -375,6 +418,110 @@ export default function Compras({ esAdmin }: { esAdmin: boolean }): React.JSX.El
         </table>
       </section>
     </div>
+  )
+}
+
+// Devolverle al proveedor parte de una compra. Si devuelve la plata, entra a la caja abierta.
+function DevolverCompra({
+  compra: c,
+  onCancelar,
+  onHecha
+}: {
+  compra: Compra
+  onCancelar: () => void
+  onHecha: (c: Compra) => void
+}): React.JSX.Element {
+  const [cantidades, setCantidades] = useState<Record<number, number>>({})
+  const [motivo, setMotivo] = useState('')
+  const [pago, setPago] = useState<Pago>(c.metodoPago ?? '')
+  const [error, setError] = useState('')
+
+  const elegidos = c.items.filter((it) => (cantidades[it.id] ?? 0) > 0)
+  const valor = elegidos.reduce((s, it) => s + it.costo * cantidades[it.id], 0)
+
+  async function devolver(e: React.FormEvent): Promise<void> {
+    e.preventDefault()
+    try {
+      onHecha(
+        await api.devolverCompra(
+          c.id,
+          elegidos.map((it) => ({ itemId: it.id, cantidad: cantidades[it.id] })),
+          motivo,
+          pago || null
+        )
+      )
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }
+
+  return (
+    <form className="producto-rapido" onSubmit={devolver}>
+      <strong>Devolver al proveedor, de la compra N° {c.id}</strong>
+      <table>
+        <tbody>
+          {c.items
+            .filter((it) => it.cantidad > it.devueltos)
+            .map((it) => (
+              <tr key={it.id}>
+                <td>
+                  {it.codigo} {it.nombre} a {gs(it.costo)}
+                </td>
+                <td className="num">Puede devolver {it.cantidad - it.devueltos}</td>
+                <td className="num">
+                  <input
+                    className={
+                      'cantidad' +
+                      ((cantidades[it.id] ?? 0) > it.cantidad - it.devueltos ? ' excede' : '')
+                    }
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={cantidades[it.id] || ''}
+                    onChange={(e) =>
+                      setCantidades({ ...cantidades, [it.id]: aEntero(e.target.value) })
+                    }
+                  />
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+      <div className="grilla">
+        <label className="req ancho2">
+          Motivo
+          <input
+            placeholder="Ej.: vino fallada, talle equivocado"
+            value={motivo}
+            onChange={(e) => setMotivo(e.target.value)}
+          />
+        </label>
+        <label>
+          El proveedor devuelve la plata en
+          <select value={pago} onChange={(e) => setPago(e.target.value as Pago)}>
+            {METODOS_PAGO.map((m) => (
+              <option key={m} value={m}>
+                {NOMBRE_METODO[m]} (entra a la caja)
+              </option>
+            ))}
+            <option value="">No entra plata a la caja</option>
+          </select>
+        </label>
+      </div>
+      <p className="ayuda">
+        Lo devuelto sale del stock (si ya se vendió, no se puede). &quot;No entra plata a la
+        caja&quot; es para cuando el proveedor deja el monto a favor o la compra no se había pagado
+        con plata de la caja.
+      </p>
+      {error && <p className="error">{error}</p>}
+      <div className="acciones sin-margen">
+        <button className="primario" disabled={!elegidos.length || !motivo.trim()}>
+          Devolver{valor ? ` (${gs(valor)})` : ''}
+        </button>
+        <button type="button" onClick={onCancelar}>
+          Cancelar
+        </button>
+      </div>
+    </form>
   )
 }
 

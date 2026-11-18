@@ -227,11 +227,13 @@ export interface CompraNueva {
 }
 
 export interface ItemCompra {
+  id: number
   codigo: string
   nombre: string
   cantidad: number
   costo: number
   subtotal: number
+  devueltos: number // unidades devueltas al proveedor
 }
 
 export interface Compra {
@@ -243,6 +245,7 @@ export interface Compra {
   metodoPago: MetodoPago | null
   cajaId: number | null // caja de la que salió la plata
   observacion: string | null
+  devuelto: number // valor de lo devuelto al proveedor
   anulada: boolean
   items: ItemCompra[]
 }

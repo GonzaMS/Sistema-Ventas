@@ -285,5 +285,33 @@ export const migraciones: string[] = [
 
   ALTER TABLE cuotas ADD COLUMN descontado INTEGER NOT NULL DEFAULT 0;
   ALTER TABLE movimientos_caja ADD COLUMN devolucion_id INTEGER REFERENCES devoluciones (id);
+  `,
+
+  // 9. Devolución de parte de una compra al proveedor: baja el stock y, si el proveedor devuelve
+  // la plata, entra a la caja abierta como "Devolución de compra" (el movimiento lleva compra_id y
+  // devolucion_compra_id). metodo_pago NULL = no entró plata (crédito con el proveedor).
+  `
+  CREATE TABLE devoluciones_compra (
+    id INTEGER PRIMARY KEY,
+    fecha TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    compra_id INTEGER NOT NULL REFERENCES compras (id),
+    usuario_id INTEGER NOT NULL REFERENCES usuarios (id),
+    valor INTEGER NOT NULL CHECK (valor >= 0),
+    metodo_pago TEXT,
+    motivo TEXT NOT NULL
+  );
+  CREATE INDEX devoluciones_compra_compra ON devoluciones_compra (compra_id);
+
+  CREATE TABLE devolucion_compra_items (
+    devolucion_id INTEGER NOT NULL REFERENCES devoluciones_compra (id),
+    compra_item_id INTEGER NOT NULL REFERENCES compra_items (id),
+    cantidad INTEGER NOT NULL CHECK (cantidad > 0),
+    valor INTEGER NOT NULL CHECK (valor >= 0),
+    PRIMARY KEY (devolucion_id, compra_item_id)
+  );
+  CREATE INDEX devolucion_compra_items_item ON devolucion_compra_items (compra_item_id);
+
+  ALTER TABLE movimientos_caja ADD COLUMN devolucion_compra_id INTEGER REFERENCES devoluciones_compra (id);
+  INSERT INTO categorias_caja (nombre, tipo, sistema) VALUES ('Devolución de compra', 'ingreso', 1);
   `
 ]
