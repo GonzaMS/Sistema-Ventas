@@ -1,0 +1,11 @@
+// Lo que usan las pruebas: el proceso principal entero, sin Electron.
+export { abrirDb, getDb } from '../src/main/db'
+export * as u from '../src/main/usuarios'
+export * as p from '../src/main/productos'
+export * as c from '../src/main/clientes'
+export * as v from '../src/main/ventas'
+export * as k from '../src/main/caja'
+export * as q from '../src/main/cuotas'
+export * as n from '../src/main/negocio'
+export * as co from '../src/main/compras'
+export * as cal from '../src/shared/cuotas'

@@ -1,0 +1,52 @@
+# Sistema de ventas, caja y cuotas (para Claude Code)
+
+Se carga solo al abrir Claude en esta carpeta. El detalle del pedido está en `README.md`; la propuesta, en https://claude.ai/artifact/92dBdMkcEdgdQn5VcHHFpW (documento de Claude, leerlo con las herramientas de Docs, no con web fetch).
+
+## Quién y qué
+
+- Lo hace **Nexora Development** (Cristhian Marecos). Es un proyecto **aparte de Govly** (el sistema municipal de `~/Desktop/municipalidad`): no mezclar código ni decisiones.
+- Cliente: un local de ropa y accesorios (un solo local). Pidió el sistema por WhatsApp el 2026-11-18; audios, capturas y transcripción en `material del cliente/`.
+- Referencia: "infoventa", el sistema de escritorio de la suegra (ventas por código, inventario, productos con foto, usuarios, informes, datos del negocio). Le gusta, pero no tiene caja ni cuotas.
+
+## Decidido (2026-11-18)
+
+- **Prioridad: control de caja** (apertura, ingresos y egresos por categoría —mercadería, encomiendas, bolsitas de regalo, otros—, cierre con arqueo).
+- **Cuotas mensuales** el mismo día del mes de la compra (si no existe, el último día del mes); pagos parciales; saldo por cliente.
+- **Aplicación de escritorio, solo en la PC** (Windows). Propuesta: Electron + React + TypeScript + SQLite local, respaldo diario a la nube.
+- **Factura electrónica SIFEN**: se supone que sí; por un proveedor intermediario con API, con modo contingencia sin internet.
+- Propuesta enviada en borrador: 5 etapas (base, caja, cuotas, SIFEN, informes), ~11 semanas, Gs. 13.500.000 + mantenimiento opcional Gs. 250.000/mes. **Precios estimados por Claude**, el usuario los revisa.
+- Cobro con QR (2026-11-18): en la etapa 1 se registra como método de pago con confirmación manual. Además hay una etapa 6 opcional, el QR integrado con monto y confirmación automática por API de una procesadora o banco (2 semanas, Gs. 2.000.000, fuera del total, precio estimado).
+
+## Falta confirmar con el cliente
+
+- Entrega de la mercadería en cuotas: ¿toda al vender o a medida que paga? ("me pagan un poco y entrego poco", audio 2).
+- Recargo por atraso, impresora (térmica o A4), carga inicial de productos, métodos de pago.
+
+## Cómo trabajar
+
+- Responder en **español con voseo**, conciso; ante una decisión, recomendar una opción.
+- Commit y push solo cuando se pide (todavía no hay repo).
+- Transcribir audios con `mlx_whisper` (en `~/.local/bin`): `--model mlx-community/whisper-large-v3-turbo --language es --output-name <nombre>` (sin `--output-name` corta el nombre en el primer punto y pisa archivos).
+- Node: `export PATH=~/.nvm/versions/node/v26.13.0/bin:$PATH`.
+- Código en `app/` (electron-vite). `npm run dev` para probar; `npm run typecheck`, `npm run lint` y `npm run pruebas` antes de cerrar (pruebas en `app/pruebas/`, una base en memoria por archivo).
+- `npm run datos-demo` (con la app cerrada) reemplaza la base de prueba por una de demostración con unos 2 meses de historia (`app/scripts/demo.ts`). La base anterior queda guardada como `ventas.db.antes-de-demo-<fecha>`. Usuarios: admin/admin123 y caja/caja123. Si cambian las funciones del proceso principal, revisar que siga corriendo.
+- Compras (2026-11-18, migración 6, `src/main/compras.ts`, pestaña Compras): suben el stock, dejan el costo como nuevo precio de compra y, si se pagaron con plata de la caja, generan el egreso de sistema "Compra de mercadería" (`movimientos_caja.compra_id`). `metodo_pago` NULL = no salió de la caja. Anular (solo admin) saca el stock (no se puede si ya se vendió parte) y devuelve la plata con `revertirMovimiento` de `caja.ts`. El buscador de productos es compartido: `src/renderer/src/BuscadorProductos.tsx`.
+- Cuotas, pendientes hechos (2026-11-18, migración 7): recibo de pago y de entrega (`Recibo.tsx`, sobre `Impresion.tsx`, que también usa el cierre de caja); editar cliente (`editarCliente`, también el cajero); `clientesConSaldo(..., incluirSinSaldo)`. Anular una venta en cuotas devuelve lo pagado de esa venta (`devolverPagos` en `ventas.ts`): un pago de la caja abierta que era solo de esa venta se anula; si no, egreso "Devolución de venta" por método. Anular un pago de una caja cerrada genera el egreso "Corrección" en la abierta (`movimientos_caja.cobro_id`). Recordatorio: mensaje editable, copiar o abrir `wa.me` (convierte 09xx a 5959xx).
+- Diseño (2026-11-18): azul marino `#1b2a4a` y mostaza `#e8b931`, los colores de infoventa, que el cliente ya conoce. Fuente Public Sans incluida en la app (`@fontsource-variable/public-sans`, funciona sin internet). Colores definidos como variables en `main.css`. Piezas compartidas en `src/renderer/src/componentes.tsx`: `Encabezado` (título y ayuda de cada pantalla), `Visor` (el número principal, en panel azul con cifras mostaza; es lo único llamativo), `Cifra` (tarjetas de resumen) y `Etiqueta` (estados). Verde = entra plata o cobrar; rojo = cancelar o faltante. F12 cobra en Ventas; DevTools con Ctrl+Shift+I, solo en desarrollo.
+- Base en modo prueba: `~/Library/Application Support/sistema-ventas/ventas.db`. Instalada en Windows: `%APPDATA%\Sistema de ventas\ventas.db` (usa el `productName`).
+- SQLite con `node:sqlite` (viene en Electron 44, sin módulos nativos). Migraciones en `app/src/main/db/migraciones.ts`: nunca editar una ya aplicada, agregar al final.
+- Montos en guaraníes enteros. Toda llamada de la interfaz pasa por `app/src/main/ipc.ts`; cada función valida sesión y rol en el proceso principal.
+
+## Estado (actualizar al cerrar cada sesión)
+
+Lo que falta de cada etapa está en `PENDIENTES.md`, y cómo funciona lo que ya está hecho, en `GUIA.md`. Tener los dos al día.
+
+- 2026-11-18: pedido recibido, propuesta en borrador, carpeta armada.
+- 2026-11-18: etapa 1 empezada: proyecto en `app/`, base SQLite, primer admin + login + roles, ABM de productos, alta de usuarios. Falta de la etapa 1: pantalla de ventas (con tablas ventas/clientes), fotos de productos, importar planilla, datos del negocio, desactivar/cambiar clave de usuarios, tests. Propuesta todavía sin mandar.
+- 2026-11-18 (2.ª sesión): pantalla de ventas hecha (migración 2: clientes, ventas, venta_items). Venta por código o nombre, cliente opcional con alta rápida, descuento, método de pago, bloqueo si no alcanza el stock, ventas del día con detalle, anulación solo admin con motivo (devuelve stock). Probado con un script en el scratchpad (rolldown + stub de electron), todavía no hay tests en el repo. Falta de la etapa 1: fotos de productos, importar planilla, datos del negocio, desactivar/cambiar clave de usuarios, tests, ticket impreso.
+- 2026-11-18 (2.ª sesión): etapa 2 (caja) hecha, migración 3. Una caja abierta a la vez (índice único) y sin caja abierta no se vende. Movimientos con categoría de la tabla `categorias_caja` (todavía sin ABM), anular movimiento solo admin. Cierre con arqueo por método (efectivo se cuenta desde cero; transferencia, tarjeta y QR vienen precargados con lo esperado), guardado en `caja_arqueo` para que la caja cerrada no cambie. Anular una venta de una caja cerrada genera el egreso "Devolución de venta" en la caja abierta. QR agregado como método de pago. Historial de cajas solo admin. Probado con scripts en el scratchpad. Pendiente de caja: ABM de categorías, imprimir el cierre, arqueo ciego (que el cajero no vea lo esperado) si el cliente lo quiere.
+- 2026-11-18 (2.ª sesión): etapa 3 (cuotas) hecha, migración 4. Venta en cuotas desde Ventas: cliente obligatorio, entrega inicial (es la cuota 0, cobrada), 1 a 36 cuotas, mismo día del mes o el último (`src/shared/cuotas.ts`), y lo que sobra de la división va en la última cuota. **Supuesto: la mercadería se entrega toda al vender** (el stock baja en la venta); falta confirmarlo. Cobros (`cobros` + `cobro_cuotas`) aplicados primero a la cuota impaga más vieja del cliente, entre todas sus ventas; entran a la caja en la columna "Cobros cuotas", y la venta en cuotas no suma en "Ventas contado". Pestaña Cuotas: clientes con saldo (filtro de atrasados), cuenta corriente, registrar pago, anular pago (admin, solo de la caja abierta). Anular una venta en cuotas: solo sin cuotas pagadas, y su entrega se devuelve como en contado. Sin recargo por atraso (solo se muestran los días). Pendiente: recibo impreso, devolución de una venta en cuotas con pagos en cajas cerradas, editar datos del cliente.
+- 2026-11-18 (2.ª sesión): pendientes de la etapa 2 hechos (migración 5). Categorías editables en Administración (las de sistema, "Devolución de venta" y "Corrección", no se tocan). Arqueo ciego como opción en `negocio.arqueo_ciego` (`src/main/negocio.ts`): el cajero recibe `resumen` vacío y `ciego: true`. Anular un movimiento de una caja cerrada genera el inverso "Corrección" en la caja abierta (`corrige_id`). Impresión del cierre con `window.print()` y CSS `@media print` (hoja `.impresion` de 72 mm).
+- 2026-11-18 (cierre del día): etapas 2 y 3 completas, más Compras, rediseño de la interfaz, búsqueda por palabras, datos de demostración y pruebas en el repo. Lo que sigue (recomendado): respaldo diario, pantalla de datos del negocio, ticket de venta e instalador para Windows.
+- 2026-11-18 (3.ª sesión): "Cerrar caja…" pasó al encabezado de Caja (arriba a la derecha) y el arqueo se abre arriba. Ticket de venta (`src/renderer/src/Ticket.tsx`, sobre `Impresion.tsx`): se ofrece al cobrar y se reimprime desde el detalle de "Ventas de hoy"; dice "Comprobante interno, no válido como factura" hasta que esté SIFEN.
+- 2026-11-18 (3.ª sesión): etapa 1 completa (migración 8). Ventas de otros días y búsqueda por N° (`buscarVenta`). Usuarios: cambiar rol, activar/desactivar, contraseña nueva (admin) y la propia (`MiClave.tsx`, tocando el nombre en la barra); nadie se toca a sí mismo. Importar planilla (`Importar.tsx`, con `read-excel-file` fijado en 9.3.14; `importarProductos` valida todo y no guarda nada si hay un error). Fotos en `fotos/` junto a la base, servidas por el protocolo `foto://` (`index.ts`, CSP en `index.html`), achicadas en la interfaz (`achicarFoto`). Devolución parcial (`devolverItems`, solo admin): vuelve el stock, valor proporcional al descuento, en cuotas descuenta de las últimas cuotas impagas (`cuotas.descontado`) y lo que sobra sale en plata; una venta con devoluciones no se anula entera. No probado en la app abierta: fotos (protocolo), importación y devolución desde la interfaz.

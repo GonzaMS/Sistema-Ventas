@@ -1,0 +1,19 @@
+# Audios y capturas que mandó el cliente: no van al repo (es público).
+material del cliente/
+
+# Dependencias y compilados
+node_modules/
+out/
+dist/
+
+# Bases de datos y fotos de prueba
+*.db
+*.db-wal
+*.db-shm
+*.db.antes-de-demo-*
+fotos/
+
+.DS_Store
+.eslintcache
+*.log*
+.env*
