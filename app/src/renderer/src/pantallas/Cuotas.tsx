@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { aEntero, api, copiar, fecha, fechaHora, gs, NOMBRE_METODO } from '../api'
+import { aEntero, api, fecha, fechaHora, gs, NOMBRE_METODO } from '../api'
 import Recibo from '../Recibo'
 import { Cifra, Encabezado, Etiqueta, Visor, type Tono } from '../componentes'
 import {
@@ -177,7 +177,7 @@ function Cuenta({
   const [mensaje, setMensaje] = useState<Mensaje>(null)
   const [ultimo, setUltimo] = useState<Cobro | null>(null)
   const [aImprimir, setAImprimir] = useState<Cobro | null>(null)
-  const [panel, setPanel] = useState<'editar' | 'recordar' | null>(null)
+  const [panel, setPanel] = useState<'editar' | null>(null)
 
   // El monto sugerido es lo vencido o, si está al día, la próxima cuota.
   const cargar = (): Promise<void> =>
@@ -258,14 +258,6 @@ function Cuenta({
           {cliente.telefono && <small> · Tel. {cliente.telefono}</small>}
         </h2>
         <div className="acciones sin-margen">
-          {cuenta.saldo > 0 && (
-            <button
-              className="chico"
-              onClick={() => setPanel(panel === 'recordar' ? null : 'recordar')}
-            >
-              Recordatorio por WhatsApp
-            </button>
-          )}
           <button className="chico" onClick={() => setPanel(panel === 'editar' ? null : 'editar')}>
             Editar datos
           </button>
@@ -287,7 +279,6 @@ function Cuenta({
           onCancelar={() => setPanel(null)}
         />
       )}
-      {panel === 'recordar' && <Recordatorio cuenta={cuenta} onCerrar={() => setPanel(null)} />}
 
       <div className="cifras">
         <Cifra etiqueta="Debe en total" valor={gs(cuenta.saldo)} tono="azul" />
@@ -527,92 +518,4 @@ function EditarCliente({
       </div>
     </form>
   )
-}
-
-// "0981 123 456" → "595981123456", para abrir el chat en WhatsApp.
-function numeroWhatsApp(telefono: string | null): string | null {
-  const d = (telefono ?? '').replace(/\D/g, '')
-  if (d.startsWith('595') && d.length >= 11) return d
-  if (d.startsWith('0') && d.length === 10) return `595${d.slice(1)}`
-  if (d.startsWith('9') && d.length === 9) return `595${d}`
-  return null
-}
-
-function Recordatorio({
-  cuenta,
-  onCerrar
-}: {
-  cuenta: CuentaCliente
-  onCerrar: () => void
-}): React.JSX.Element {
-  const [texto, setTexto] = useState('')
-  const [aviso, setAviso] = useState('')
-  const numero = numeroWhatsApp(cuenta.cliente.telefono)
-
-  // El mensaje se arma una vez con el nombre del negocio; después se puede editar a mano.
-  useEffect(() => {
-    api.datosNegocio().then((n) => setTexto(armarMensaje(cuenta, n.nombre)))
-  }, [cuenta])
-
-  async function copiarTexto(): Promise<void> {
-    setAviso(
-      (await copiar(texto)) ? 'Mensaje copiado' : 'No se pudo copiar: seleccionalo y copialo a mano'
-    )
-  }
-
-  return (
-    <div className="producto-rapido">
-      <strong>Recordatorio para {cuenta.cliente.nombre}</strong>
-      <textarea rows={7} value={texto} onChange={(e) => setTexto(e.target.value)} />
-      {!numero && (
-        <p className="ayuda">
-          El cliente no tiene un celular cargado: copiá el mensaje, o cargá el teléfono en Editar
-          datos para abrir el chat directo.
-        </p>
-      )}
-      {aviso && <p className="ok">{aviso}</p>}
-      <div className="acciones sin-margen">
-        <button
-          className="exito"
-          disabled={!numero}
-          onClick={() =>
-            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank')
-          }
-        >
-          Abrir en WhatsApp
-        </button>
-        <button onClick={copiarTexto}>Copiar mensaje</button>
-        <button onClick={onCerrar}>Cerrar</button>
-      </div>
-    </div>
-  )
-}
-
-function armarMensaje(cuenta: CuentaCliente, negocio: string): string {
-  const nombre = cuenta.cliente.nombre.split(' ')[0]
-  const de = negocio ? ` de ${negocio}` : ''
-  const pendientes = cuenta.ventas
-    .flatMap((v) => v.cuotas.map((q) => ({ ...q, compra: v.fecha })))
-    .filter((q) => q.saldo > 0)
-    .sort((a, b) => a.vencimiento.localeCompare(b.vencimiento))
-  const vencidas = pendientes.filter((q) => q.diasAtraso > 0)
-  const linea = (q: (typeof pendientes)[number]): string =>
-    `• Cuota ${q.numero} de tu compra del ${fecha(q.compra)}: ${gs(q.saldo)} (${
-      q.diasAtraso > 0 ? `venció el ${fecha(q.vencimiento)}` : `vence el ${fecha(q.vencimiento)}`
-    })`
-
-  if (vencidas.length)
-    return [
-      `Hola ${nombre}, te escribimos${de}.`,
-      `Te recordamos que ${vencidas.length === 1 ? 'tenés una cuota vencida' : `tenés ${vencidas.length} cuotas vencidas`} por ${gs(cuenta.vencido)}:`,
-      ...vencidas.map(linea),
-      `Tu saldo total es ${gs(cuenta.saldo)}. Podés pasar por el local o pagar por transferencia. ¡Gracias!`
-    ].join('\n')
-  const q = pendientes[0]
-  return [
-    `Hola ${nombre}, te escribimos${de}.`,
-    `Te recordamos tu próxima cuota:`,
-    linea(q),
-    `Tu saldo total es ${gs(cuenta.saldo)}. ¡Gracias!`
-  ].join('\n')
 }

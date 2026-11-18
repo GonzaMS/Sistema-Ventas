@@ -31,7 +31,7 @@ Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de 
 ## Etapa 3: cuotas
 
 - [ ] Probar el recibo en la impresora real del local (mismo formato de 72 mm que el cierre de caja).
-- [ ] Recordatorio: hoy se manda de a uno desde la cuenta del cliente. Si hay muchos atrasados, armar una lista para mandarlos seguidos.
+- [ ] Avisos por WhatsApp (sacados el 2026-11-18, quizás a futuro): recordatorio de cuotas y aviso de pago, abriendo `wa.me` con el mensaje armado; lista de vencidos y por vencer con marca de "avisado"; celular obligatorio solo en ventas en cuotas. El envío automático (API de Meta) se cotizaría aparte.
 
 ## Compras
 

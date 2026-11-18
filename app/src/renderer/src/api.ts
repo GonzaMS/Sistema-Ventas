@@ -50,19 +50,3 @@ export const cantidad = (n: number, uno: string, varios: string): string =>
 export const fecha = (f: string): string => `${f.slice(8, 10)}/${f.slice(5, 7)}/${f.slice(0, 4)}`
 export const hora = (f: string): string => f.slice(11, 16)
 export const fechaHora = (f: string): string => `${f.slice(8, 10)}/${f.slice(5, 7)} ${hora(f)}`
-
-// Copia al portapapeles; si el navegador no lo permite, usa el método viejo.
-export async function copiar(texto: string): Promise<boolean> {
-  try {
-    await navigator.clipboard.writeText(texto)
-    return true
-  } catch {
-    const t = document.createElement('textarea')
-    t.value = texto
-    document.body.appendChild(t)
-    t.select()
-    const ok = document.execCommand('copy')
-    t.remove()
-    return ok
-  }
-}

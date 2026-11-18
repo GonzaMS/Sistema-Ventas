@@ -15,7 +15,7 @@ Sistema desarrollado a la medida de su negocio, instalado en la computadora del 
 *2. Funcionalidades incluidas*
 - *Ventas:* búsqueda por código o nombre, descuentos, métodos de pago (efectivo, transferencia, tarjeta y QR) e impresión de comprobante.
 - *Control de caja:* apertura, ingresos y egresos por categoría (mercadería, encomiendas, bolsitas de regalo y otros) y cierre con arqueo impreso.
-- *Ventas en cuotas:* vencimientos mensuales en el mismo día de la compra, pagos parciales, saldo por cliente, control de atrasos, recibos de pago y recordatorios por WhatsApp.
+- *Ventas en cuotas:* vencimientos mensuales en el mismo día de la compra, pagos parciales, saldo por cliente, control de atrasos y recibos de pago.
 - *Inventario:* productos con foto, registro de compras a proveedores y control de stock.
 - *Usuarios:* acceso con contraseña y permisos diferenciados para administrador y cajero.
 - *Informes:* ventas, caja y cuotas por período.

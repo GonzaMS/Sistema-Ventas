@@ -72,7 +72,6 @@ En Ventas, con **En cuotas**:
 - Tocando un cliente se abre su **cuenta**: cada compra con sus cuotas (Pagada, Pago parcial, Pendiente, Atrasada · N días) y la lista de pagos.
 - **Registrar pago:** el cliente paga lo que trae. **El pago se aplica primero a la cuota impaga más vieja**, aunque sea de otra compra, y puede ser parcial. El monto sugerido es lo vencido o, si está al día, la próxima cuota.
 - Cada pago entra a la caja en la columna "Cobros cuotas" y tiene su **recibo** para imprimir.
-- **Recordatorio por WhatsApp:** arma un mensaje con lo vencido, que se puede editar, y abre el chat del cliente o copia el texto.
 - **Editar datos** del cliente (nombre, CI, teléfono, dirección). Con "Incluir clientes sin deuda" se ven también los que están al día.
 - Por ahora no hay recargo por atraso; solo se muestran los días.
 
