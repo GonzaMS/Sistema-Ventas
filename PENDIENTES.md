@@ -2,7 +2,7 @@
 
 Todo lo que falta, por etapa. Al terminar un punto, borrarlo de acá. El funcionamiento de lo que ya está hecho se explica en `GUIA.md`.
 
-Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de Compras. Las etapas 4 (factura electrónica) y 5 (informes) no están empezadas.
+Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de Compras. La etapa 5 (informes) no está empezada. La etapa 4 (factura electrónica) quedó fuera de la oferta (2026-11-18).
 
 ## Prioridad: antes de instalar en el local
 
@@ -15,7 +15,6 @@ Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de 
   Incluir la carpeta `fotos/` que está junto a la base (las fotos de productos).
 - [ ] **Instalador para Windows** (`npm run build:win`) y probarlo en una PC con Windows 10 u 11: que la base se cree en `%APPDATA%\Sistema de ventas\` y que arranque sin internet.
 - [ ] **Pantalla de datos del negocio** (nombre, RUC, dirección, teléfono). La tabla existe y el cierre y el recibo ya los imprimen, pero solo se cargan con `npm run datos-demo`.
-- [ ] Crear el repositorio git y hacer el primer commit (todavía no hay).
 
 ## Etapa 1: base
 
@@ -39,7 +38,10 @@ Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de 
 - [ ] Compras a crédito: hoy "no sale de la caja" cubre tanto lo que pagó el dueño aparte como lo que se le debe al proveedor. Si el cliente compra seguido a crédito, llevar la deuda por proveedor y registrar los pagos.
 - [ ] Al registrar una compra, poder actualizar también el precio de venta, si subió el costo.
 
-## Etapa 4: factura electrónica (SIFEN), sin empezar
+## Etapa 4: factura electrónica (SIFEN), fuera de la oferta por ahora
+
+No entra en la oferta de Gs. 3.000.000 (`propuesta/oferta-whatsapp.md`). Si la DNIT obliga a la clienta, se cotiza aparte. Además de lo de abajo, falta agregar el IVA de cada producto (10%, 5% o exento), los datos fiscales del negocio (timbrado, establecimiento, punto de expedición) y distinguir RUC de CI en los clientes.
+
 
 - [ ] Elegir con el cliente el proveedor intermediario (con API) y ver su costo.
 - [ ] Trámites del local: RUC al día, alta como facturador electrónico ante la DNIT con timbrado y certificado de firma digital.

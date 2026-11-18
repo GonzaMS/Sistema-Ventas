@@ -14,7 +14,7 @@ Pedido recibido por WhatsApp el 2026-11-18. Es un proyecto aparte de Govly. Cont
 ## Decidido
 
 - Un solo local, aplicación de escritorio, solo en la PC.
-- Con factura electrónica (SIFEN), por ahora supuesta.
+- Factura electrónica (SIFEN): fuera de la oferta por ahora (2026-11-18), se cotiza aparte si hace falta.
 - Propuesta técnica: Electron + React + SQLite local, respaldo diario a la nube, SIFEN por un proveedor intermediario.
 - Propuesta comercial: 5 etapas, unas 11 semanas, Gs. 13.500.000 y mantenimiento opcional de Gs. 250.000 por mes (estimados, revisar antes de mandar).
 
