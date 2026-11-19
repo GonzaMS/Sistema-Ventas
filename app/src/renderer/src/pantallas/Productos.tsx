@@ -31,6 +31,8 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
   const [proveedor, setProveedor] = useState('')
   const [stock, setStock] = useState<'todo' | 'bajo' | 'sin'>('todo')
   const [importando, setImportando] = useState(false)
+  // El formulario se muestra solo al cargar un producto nuevo o al editar uno de la lista.
+  const [formAbierto, setFormAbierto] = useState(false)
   const formulario = useRef<HTMLFormElement>(null)
   // Foto del producto en edición: la guardada, y la elegida o quitada (se guarda al guardar).
   const [fotoGuardada, setFotoGuardada] = useState<string | null>(null)
@@ -53,6 +55,7 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
       })
 
   function limpiar(): void {
+    setFormAbierto(false)
     setForm(VACIO)
     setEditandoId(null)
     setFotoGuardada(null)
@@ -108,9 +111,12 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
       vencimiento: p.vencimiento ?? ''
     })
     setEditandoId(id)
+    setFormAbierto(true)
     setMensaje(null)
     // Al elegir un producto de la lista, subir al formulario donde se cargaron sus datos.
-    formulario.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    requestAnimationFrame(() =>
+      formulario.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    )
   }
 
   const miles = (n: number): string => (n ? n.toLocaleString('es-PY') : '')
@@ -138,6 +144,17 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
       >
         {esAdmin && !importando && (
           <button onClick={() => setImportando(true)}>Importar planilla…</button>
+        )}
+        {esAdmin && !formAbierto && (
+          <button
+            className="primario"
+            onClick={() => {
+              setMensaje(null)
+              setFormAbierto(true)
+            }}
+          >
+            Nuevo producto
+          </button>
         )}
       </Encabezado>
       {importando && (
@@ -176,9 +193,10 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
           />
         </div>
       )}
-      {esAdmin && (
+      {mensaje && !formAbierto && <p className={mensaje.error ? 'error' : 'ok'}>{mensaje.texto}</p>}
+      {esAdmin && formAbierto && (
         <form ref={formulario} className="tarjeta" onSubmit={guardar}>
-          <h2>{editandoId ? `Editar producto ${form.codigo}` : 'Registrar producto'}</h2>
+          <h2>{editandoId ? `Editar producto ${form.codigo}` : 'Nuevo producto'}</h2>
           <div className="grilla">
             <label className="req">
               Código
@@ -225,10 +243,6 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
               />
             </label>
             <label>
-              Categoría
-              <input value={form.categoria ?? ''} onChange={campo('categoria')} />
-            </label>
-            <label>
               Familia
               <input
                 placeholder="Ej.: Accesorios"
@@ -239,14 +253,6 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
             <label>
               Proveedor
               <input value={form.proveedor ?? ''} onChange={campo('proveedor')} />
-            </label>
-            <label>
-              Vencimiento
-              <input type="date" value={form.vencimiento ?? ''} onChange={campo('vencimiento')} />
-            </label>
-            <label className="ancho3">
-              Descripción
-              <textarea rows={2} value={form.descripcion ?? ''} onChange={campo('descripcion')} />
             </label>
             <div className="foto-campo">
               {fotoNueva || (fotoGuardada && !sinFoto) ? (
@@ -282,13 +288,39 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
               </div>
             </div>
           </div>
+          <details
+            className="mas-datos"
+            open={!!(form.categoria || form.vencimiento || form.descripcion)}
+          >
+            <summary>Más datos (opcional): categoría, vencimiento y descripción</summary>
+            <div className="grilla">
+              <label>
+                Categoría
+                <input value={form.categoria ?? ''} onChange={campo('categoria')} />
+              </label>
+              <label>
+                Vencimiento
+                <input type="date" value={form.vencimiento ?? ''} onChange={campo('vencimiento')} />
+              </label>
+              <label className="ancho3">
+                Descripción
+                <textarea rows={2} value={form.descripcion ?? ''} onChange={campo('descripcion')} />
+              </label>
+            </div>
+          </details>
           {mensaje && <p className={mensaje.error ? 'error' : 'ok'}>{mensaje.texto}</p>}
           <div className="acciones">
             <button className="primario">
               {editandoId ? 'Guardar cambios' : 'Guardar producto'}
             </button>
-            <button type="button" onClick={limpiar}>
-              {editandoId ? 'Cancelar' : 'Limpiar'}
+            <button
+              type="button"
+              onClick={() => {
+                limpiar()
+                setMensaje(null)
+              }}
+            >
+              Cancelar
             </button>
             {editandoId && (
               <button type="button" className="peligro" onClick={eliminar}>
@@ -301,7 +333,7 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
 
       <section className="tarjeta">
         <div className="fila-titulo">
-          <h2>Lista de productos</h2>
+          <h2>Lista de productos{esAdmin && <small> · tocá un producto para editarlo</small>}</h2>
           <span>
             {filtrados.length} {lista.length === 500 ? 'de los primeros 500' : 'productos'}
           </span>
@@ -352,7 +384,7 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
               <th>Unidad</th>
               <th className="num">Disponible</th>
               <th className="num">Mínimo</th>
-              <th className="num">Compra</th>
+              {esAdmin && <th className="num">Compra</th>}
               <th className="num">Venta</th>
             </tr>
           </thead>
@@ -379,13 +411,13 @@ export default function Productos({ esAdmin }: { esAdmin: boolean }): React.JSX.
                   {p.stock}
                 </td>
                 <td className="num">{p.stockMinimo}</td>
-                <td className="num">{gs(p.precioCompra)}</td>
+                {esAdmin && <td className="num">{gs(p.precioCompra)}</td>}
                 <td className="num">{gs(p.precioVenta)}</td>
               </tr>
             ))}
             {filtrados.length === 0 && (
               <tr>
-                <td colSpan={9} className="vacio">
+                <td colSpan={esAdmin ? 9 : 8} className="vacio">
                   No hay productos{busqueda || conFiltros ? ' que coincidan' : ' cargados'}.
                 </td>
               </tr>

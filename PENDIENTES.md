@@ -40,14 +40,24 @@ Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de 
 
 ## Etapa 4: factura electrónica (SIFEN), fuera de la oferta por ahora
 
-No entra en la oferta de Gs. 3.000.000 (`propuesta/oferta-whatsapp.md`). Si la DNIT obliga a la clienta, se cotiza aparte. Además de lo de abajo, falta agregar el IVA de cada producto (10%, 5% o exento), los datos fiscales del negocio (timbrado, establecimiento, punto de expedición) y distinguir RUC de CI en los clientes.
+No entra en la oferta de Gs. 3.000.000 (`propuesta/oferta-whatsapp.md`). Si la DNIT obliga a la clienta, se cotiza aparte (referencia: la competencia cobra Gs. 2.000.000 más con factura). Requisitos anotados el 2026-11-19 de memoria, sin verificar: confirmarlos en ekuatia.set.gov.py antes de cotizar.
 
+**Trámites (los hace la clienta, es su RUC).** Conviene que los empiece antes del desarrollo: la habilitación puede tardar semanas.
 
-- [ ] Elegir con el cliente el proveedor intermediario (con API) y ver su costo.
-- [ ] Trámites del local: RUC al día, alta como facturador electrónico ante la DNIT con timbrado y certificado de firma digital.
-- [ ] Emitir la factura y la nota de crédito desde la venta, e imprimir el comprobante con su QR.
-- [ ] Modo contingencia: facturar sin internet y enviar al volver la conexión.
-- [ ] Pruebas con la DNIT en el ambiente de pruebas antes de pasar a producción.
+- [ ] RUC activo y clave de acceso a Marangatu.
+- [ ] Certificado digital (firma electrónica) de un prestador habilitado por el MIC. Unos Gs. 500.000 por año, lo paga ella.
+- [ ] Solicitar en Marangatu ser facturadora electrónica (si la DNIT no la designó ya como obligada).
+- [ ] Pruebas en el ambiente de pruebas de SIFEN: las hacemos nosotros con el sistema.
+- [ ] Recibir el timbrado electrónico (establecimiento y punto de expedición) y el CSC (Código de Seguridad del Contribuyente, para el QR).
+
+**En el sistema.** Recomendado: un proveedor intermediario con API (unas 2 semanas de trabajo; ella le paga un abono o por documento). Directo a SIFEN serían 4 a 6 semanas y habría que mantenerlo ante cada cambio del Manual Técnico (en npm hay `facturacionelectronicapy-xmlgen`, `-xmlsign` y `-setapi`).
+
+- [ ] Elegir con la clienta el proveedor intermediario y ver su costo.
+- [ ] Datos que faltan: IVA de cada producto (10%, 5% o exento), datos fiscales del negocio (timbrado, establecimiento, punto de expedición, CSC) y RUC o CI en los clientes.
+- [ ] Emitir la factura desde la venta (XML con su CDC de 44 dígitos, firmado y enviado; guardar si se aprobó o se rechazó).
+- [ ] Imprimir el KuDE (comprobante con QR) en lugar del ticket interno.
+- [ ] Anular o cancelar con un evento, y nota de crédito en las devoluciones (`anularVenta`, `devolverItems`).
+- [ ] Modo contingencia: facturar sin internet y enviar al volver la conexión, dentro del plazo de transmisión.
 
 ## Etapa 5: informes, sin empezar
 

@@ -8,7 +8,6 @@ import Cuotas from './pantallas/Cuotas'
 import Compras from './pantallas/Compras'
 import Productos from './pantallas/Productos'
 import Administracion from './pantallas/Administracion'
-import { Encabezado } from './componentes'
 import MiClave from './MiClave'
 
 const PESTANAS = [
@@ -17,7 +16,6 @@ const PESTANAS = [
   { id: 'cuotas', nombre: 'Cuotas' },
   { id: 'compras', nombre: 'Compras' },
   { id: 'productos', nombre: 'Productos' },
-  { id: 'informes', nombre: 'Informes', etapa: 'etapa 5' },
   { id: 'admin', nombre: 'Administración', soloAdmin: true }
 ] as const
 
@@ -131,12 +129,6 @@ function App(): React.JSX.Element {
         {actual.id === 'compras' && <Compras esAdmin={usuario.rol === 'admin'} />}
         {actual.id === 'productos' && <Productos esAdmin={usuario.rol === 'admin'} />}
         {actual.id === 'admin' && <Administracion yo={usuario} />}
-        {'etapa' in actual && (
-          <Encabezado
-            titulo={actual.nombre}
-            ayuda={`Ventas por día y por método de pago, gastos por categoría, cuotas por cobrar y productos más vendidos. Llega en la ${actual.etapa}.`}
-          />
-        )}
       </main>
     </div>
   )

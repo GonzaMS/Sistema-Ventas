@@ -325,7 +325,10 @@ function NuevoMovimiento({
           metodoPago: metodo
         })
       )
-      setMensaje({ error: false, texto: `${tipo === 'egreso' ? 'Egreso' : 'Ingreso'} registrado` })
+      setMensaje({
+        error: false,
+        texto: `${tipo === 'egreso' ? 'Gasto' : 'Ingreso'} anotado en la caja`
+      })
       setDescripcion('')
       setMonto(0)
     } catch (err) {
@@ -335,17 +338,26 @@ function NuevoMovimiento({
 
   return (
     <form className="tarjeta" onSubmit={guardar}>
-      <h2>Registrar ingreso o egreso</h2>
+      <h2>Anotar plata que sale o entra</h2>
+      <div className="segmentado tipo-movimiento">
+        <button
+          type="button"
+          className={tipo === 'egreso' ? 'activa' : ''}
+          onClick={() => setTipo('egreso')}
+        >
+          Salió plata (gasto)
+        </button>
+        <button
+          type="button"
+          className={tipo === 'ingreso' ? 'activa' : ''}
+          onClick={() => setTipo('ingreso')}
+        >
+          Entró plata
+        </button>
+      </div>
       <div className="grilla">
         <label>
-          Tipo
-          <select value={tipo} onChange={(e) => setTipo(e.target.value as TipoMovimiento)}>
-            <option value="egreso">Egreso (sale plata)</option>
-            <option value="ingreso">Ingreso (entra plata)</option>
-          </select>
-        </label>
-        <label>
-          Categoría
+          ¿En qué?
           <select
             value={elegida?.id ?? ''}
             onChange={(e) => setCategoriaId(Number(e.target.value))}
@@ -366,7 +378,7 @@ function NuevoMovimiento({
           />
         </label>
         <label>
-          Pago
+          ¿Cómo?
           <select value={metodo} onChange={(e) => setMetodo(e.target.value as MetodoPago)}>
             {METODOS_PAGO.map((m) => (
               <option key={m} value={m}>
@@ -376,7 +388,7 @@ function NuevoMovimiento({
           </select>
         </label>
         <label className="ancho3">
-          Descripción
+          Detalle (opcional)
           <input
             placeholder="Ej.: encomienda a Encarnación, compra a proveedor…"
             value={descripcion}

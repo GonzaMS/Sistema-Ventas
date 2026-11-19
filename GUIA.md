@@ -101,7 +101,7 @@ Para mercadería conviene usar siempre Compras y no un gasto manual de "Mercader
 
 ### 6. Otros ingresos y gastos (pestaña Caja)
 
-En "Registrar ingreso o egreso" se cargan las salidas de plata que no son compras de mercadería: encomiendas, bolsitas de regalo, alquiler, luz… y las entradas que no son ventas. Cada una lleva categoría, monto, método y una descripción. Las categorías se agregan, renombran o desactivan en Administración.
+En "Anotar plata que sale o entra" se elige **Salió plata (gasto)** o **Entró plata** y se cargan las salidas que no son compras de mercadería (encomiendas, bolsitas de regalo, alquiler, luz…) y las entradas que no son ventas. Cada una lleva categoría ("¿En qué?"), monto, método ("¿Cómo?") y un detalle opcional. Las categorías se agregan, renombran o desactivan en Administración.
 
 ### 7. Cerrar la caja
 
@@ -157,8 +157,10 @@ Algunos casos no se pueden anular:
 
 ## Productos
 
-- Código, nombre, familia, proveedor, unidad, stock, stock mínimo, precio de compra y de venta.
-- Las tarjetas de arriba muestran cuántos productos hay, cuántos tienen el **stock bajo** (en el mínimo o por debajo) y el valor del stock al costo y a precio de venta. Las cifras de costo y ganancia las ve solo el admin.
+- Código, nombre, familia, proveedor, unidad, stock, stock mínimo, precio de compra y de venta. Categoría, vencimiento y descripción van en "Más datos (opcional)".
+- El formulario aparece solo con **Nuevo producto** (arriba a la derecha) o al tocar un producto de la lista para editarlo; **Cancelar** lo cierra. Los campos obligatorios dicen "obligatorio" y tienen fondo amarillo.
+- El precio de compra lo ve solo el admin (en la lista y en las tarjetas).
+- Las tarjetas de arriba muestran cuántos productos hay, cuántos tienen el **stock bajo** (en el mínimo o por debajo) y el valor del stock al costo y a precio de venta.
 - La lista se filtra por familia, proveedor y stock. La búsqueda es por palabras sueltas, en cualquier orden.
 - El stock sube con las compras y baja con las ventas. A mano solo lo cambia el admin, editando el producto.
 - Eliminar un producto lo desactiva: las ventas viejas lo siguen mostrando.

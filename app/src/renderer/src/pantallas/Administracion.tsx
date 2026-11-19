@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import { api } from '../api'
-import { Cifra, Encabezado, Etiqueta } from '../componentes'
+import { Encabezado, Etiqueta } from '../componentes'
 import type { CategoriaCaja, Rol, TipoMovimiento, Usuario } from '../../../shared/tipos'
 
 export default function Administracion({ yo }: { yo: Usuario }): React.JSX.Element {
@@ -58,15 +58,6 @@ export default function Administracion({ yo }: { yo: Usuario }): React.JSX.Eleme
         titulo="Administración"
         ayuda="Usuarios y permisos, opciones de la caja y categorías de ingresos y egresos."
       />
-      <div className="cifras">
-        <Cifra etiqueta="Usuarios" valor={usuarios.length} tono="azul" />
-        <Cifra etiqueta="Activos" valor={usuarios.filter((u) => u.activo).length} tono="verde" />
-        <Cifra
-          etiqueta="Administradores"
-          valor={usuarios.filter((u) => u.rol === 'admin').length}
-          tono="ambar"
-        />
-      </div>
       <form className="tarjeta" onSubmit={crear}>
         <h2>Crear usuario</h2>
         <div className="grilla">

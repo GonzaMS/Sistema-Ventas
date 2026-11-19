@@ -27,7 +27,7 @@
   --requerido: #fffbea;
 
   font-family: 'Public Sans Variable', 'Segoe UI', system-ui, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.4;
   color: var(--texto);
   background: var(--fondo);
@@ -102,6 +102,19 @@ label.req input,
 label.req select {
   background: var(--requerido);
 }
+/* Los campos obligatorios llevan la palabra arriba a la derecha, además del fondo amarillo. */
+label.req {
+  position: relative;
+}
+label.req::after {
+  content: 'obligatorio';
+  position: absolute;
+  top: 1px;
+  right: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ambar);
+}
 
 button {
   padding: 8px 16px;
@@ -151,8 +164,8 @@ button.peligro:hover {
   background: var(--rojo-fondo);
 }
 button.chico {
-  padding: 3px 10px;
-  font-size: 12px;
+  padding: 4px 10px;
+  font-size: 13px;
   border-radius: 6px;
 }
 button.grande {
@@ -173,7 +186,7 @@ label {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #334155;
 }
@@ -603,7 +616,7 @@ table {
 }
 th {
   text-align: left;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 650;
   color: var(--suave);
   background: var(--superficie-2);
@@ -857,6 +870,24 @@ input.cantidad.excede {
   color: var(--tinta);
   font-weight: 700;
   box-shadow: 0 1px 3px rgba(27, 42, 74, 0.15);
+}
+
+.mas-datos {
+  margin-top: 14px;
+}
+.mas-datos summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--azul);
+  margin-bottom: 10px;
+}
+
+.segmentado.tipo-movimiento {
+  max-width: 440px;
+  margin-bottom: 14px;
+}
+.segmentado.tipo-movimiento button {
+  padding: 9px;
 }
 
 .plan {
