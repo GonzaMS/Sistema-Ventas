@@ -1102,3 +1102,36 @@ td.miniatura img {
   object-fit: cover;
   flex-shrink: 0;
 }
+
+/* Selector chico al lado de un título (Informes: más vendidos / más ganancia). */
+.fila-titulo .segmentado button {
+  white-space: nowrap;
+  padding: 6px 14px;
+}
+
+/* Imprimir una pantalla entera (Informes), en A4: se ve todo menos la barra y los botones. */
+@media print {
+  body.imprimir-pantalla * {
+    visibility: visible;
+  }
+  body.imprimir-pantalla .barra,
+  body.imprimir-pantalla .no-imprimir {
+    display: none;
+  }
+  body.imprimir-pantalla .contenido {
+    padding: 0;
+  }
+  body.imprimir-pantalla .tarjeta,
+  body.imprimir-pantalla .cifra {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  body.imprimir-pantalla .visor,
+  body.imprimir-pantalla .etiqueta,
+  body.imprimir-pantalla .cifra {
+    print-color-adjust: exact;
+  }
+  body.imprimir-pantalla tr {
+    break-inside: avoid;
+  }
+}

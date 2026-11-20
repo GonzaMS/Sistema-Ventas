@@ -177,6 +177,21 @@ Para la carga inicial (por ejemplo, la lista de infoventa). Productos → **Impo
 
 Los productos se reconocen por el código. Los que ya existen quedan como están, salvo que se marque **actualizar**: entonces se pisan solo las columnas elegidas (incluido el stock, si se eligió). Los montos se leen con o sin puntos y con "Gs.".
 
+## Informes (solo el admin)
+
+Pestaña **Informes**. Arriba se elige el período (hoy, esta semana desde el lunes, este mes, el mes pasado u otras fechas, los dos días incluidos) y la sección:
+
+- **Ventas:** lo vendido sin las anuladas ni lo devuelto, por día (al contado, en cuotas, devoluciones). Una venta en cuotas cuenta entera el día que se vende; una devolución, el día que se hace. Abajo, la **plata que entró por método de pago**: ventas al contado más entregas y pagos de cuotas, que cuentan el día que se cobran.
+- **Caja y gastos:** cada caja abierta en el período con los números de su cierre (lo que quedó, sin el monto inicial, y si faltó o sobró al contar); la abierta, con los de ahora. Gastos y otros ingresos por categoría; las "Corrección" no se cuentan, porque deshacen un movimiento que ya está anulado.
+- **Cuotas por cobrar:** es de hoy, no depende de las fechas. Lo que se debe, lo vencido por días de atraso de cada cuota (1-30, 31-60, 61-90, más de 90) y los clientes atrasados con su teléfono.
+- **Productos y stock:** los 30 más vendidos o los que más ganancia dejaron. Lo vendido lleva su parte del descuento de la venta y resta lo devuelto. El costo es el precio de compra que tenía el producto **al venderse** (se guarda en cada renglón de la venta), así que la ganancia no cambia si después sube el costo. Las ventas anteriores al 19/11/2026 tomaron el precio de compra de ese día. El valor del stock es el de hoy.
+- **Quién hizo qué:** el historial de la tabla `auditoria` (las últimas 1000 acciones del período), con un buscador.
+
+Arriba a la derecha:
+
+- **Imprimir:** la sección que se está viendo, en hoja A4, sin la barra ni los botones.
+- **Exportar a Excel:** todas las secciones del período en un `.xlsx`, una hoja por tabla (ventas por día, por método de pago, cajas, gastos, otros ingresos, productos vendidos —todos, no solo 30—, stock, clientes atrasados, vencido por atraso y quién hizo qué). Los montos van como números, para poder sumarlos. Pregunta dónde guardarlo.
+
 ## Dónde quedan los datos
 
 Todo está en un solo archivo SQLite, en la PC:

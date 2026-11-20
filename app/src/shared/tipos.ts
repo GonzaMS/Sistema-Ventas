@@ -249,3 +249,72 @@ export interface Compra {
   anulada: boolean
   items: ItemCompra[]
 }
+
+// Informes (solo admin). desde y hasta: AAAA-MM-DD, los dos días incluidos.
+export interface InformeVentasDia {
+  dia: string // AAAA-MM-DD
+  cantidad: number // ventas no anuladas
+  contado: number
+  cuotas: number // total vendido en cuotas (la entrega incluida)
+  devuelto: number // devoluciones hechas ese día, de cualquier venta
+}
+
+export interface InformeMetodo {
+  metodo: MetodoPago
+  contado: number // ventas al contado
+  cobros: number // entregas y pagos de cuotas
+}
+
+// Una caja abierta en el período, con los números del cierre (o los de ahora, si sigue abierta).
+export interface InformeCaja {
+  id: number
+  abiertaEn: string
+  cerradaEn: string | null
+  ventas: number
+  cobros: number
+  ingresos: number
+  egresos: number
+  esperado: number // sin el monto inicial
+  diferencia: number | null // contado − esperado; null si sigue abierta
+}
+
+export interface InformeProducto {
+  productoId: number
+  codigo: string
+  nombre: string
+  unidades: number // vendidas menos devueltas
+  importe: number // con el descuento de la venta repartido y sin lo devuelto
+  costo: number // unidades × precio de compra del producto al venderse
+}
+
+export interface InformeAuditoria {
+  id: number
+  fecha: string
+  usuario: string | null
+  accion: string
+  entidad: string
+  entidadId: number | null
+  detalle: string | null
+}
+
+export interface Informe {
+  desde: string
+  hasta: string
+  ventasPorDia: InformeVentasDia[]
+  porMetodo: InformeMetodo[]
+  cajas: InformeCaja[]
+  gastos: { categoria: string; monto: number; cantidad: number }[]
+  ingresos: { categoria: string; monto: number; cantidad: number }[]
+  productos: InformeProducto[]
+  // Lo que sigue es de hoy, no del período.
+  stock: { productos: number; unidades: number; costo: number; venta: number; bajoMinimo: number }
+  cuotas: {
+    saldo: number
+    vencido: number
+    clientes: number
+    // Saldo vencido por días de atraso de cada cuota: 1-30, 31-60, 61-90, más de 90.
+    atraso: { tramo: string; monto: number; cuotas: number }[]
+    morosos: ResumenCliente[]
+  }
+  auditoria: InformeAuditoria[]
+}

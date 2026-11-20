@@ -2,7 +2,7 @@
 
 Todo lo que falta, por etapa. Al terminar un punto, borrarlo de acá. El funcionamiento de lo que ya está hecho se explica en `GUIA.md`.
 
-Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de Compras. La etapa 5 (informes) no está empezada. La etapa 4 (factura electrónica) quedó fuera de la oferta (2026-11-18).
+Estado al 2026-11-18: etapas 1 (base), 2 (caja) y 3 (cuotas) hechas, además de Compras. La etapa 5 (informes) está empezada (2026-11-19). La etapa 4 (factura electrónica) quedó fuera de la oferta (2026-11-18).
 
 ## Prioridad: antes de instalar en el local
 
@@ -59,13 +59,12 @@ No entra en la oferta de Gs. 3.000.000 (`propuesta/oferta-whatsapp.md`). Si la D
 - [ ] Anular o cancelar con un evento, y nota de crédito en las devoluciones (`anularVenta`, `devolverItems`).
 - [ ] Modo contingencia: facturar sin internet y enviar al volver la conexión, dentro del plazo de transmisión.
 
-## Etapa 5: informes, sin empezar
+## Etapa 5: informes
 
-- [ ] Caja por día y gastos por categoría.
-- [ ] Ventas por día y por método de pago, contado y cuotas.
-- [ ] Cuotas por cobrar y morosos.
-- [ ] Productos más vendidos y más rentables, y valor del stock (ya hay una parte en las tarjetas de Productos).
-- [ ] Historial de auditoría (quién hizo qué y cuándo): los datos ya se guardan en la tabla `auditoria`.
+Hecha la pestaña Informes (2026-11-19): ventas, caja y gastos, cuotas por cobrar, productos y stock, auditoría, con impresión en A4 y exportación a Excel, y el costo guardado en cada venta. Falta:
+
+- [ ] Probar la impresión en la impresora del local (si es de tickets, el informe en A4 no sirve: imprimir a PDF o usar el Excel).
+- [ ] Probarlo con la clienta: qué mira de verdad y qué le sobra.
 
 ## Depende de lo que confirme el cliente
 

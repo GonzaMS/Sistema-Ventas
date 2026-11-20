@@ -8,6 +8,7 @@ import Cuotas from './pantallas/Cuotas'
 import Compras from './pantallas/Compras'
 import Productos from './pantallas/Productos'
 import Administracion from './pantallas/Administracion'
+import Informes from './pantallas/Informes'
 import MiClave from './MiClave'
 
 const PESTANAS = [
@@ -16,6 +17,7 @@ const PESTANAS = [
   { id: 'cuotas', nombre: 'Cuotas' },
   { id: 'compras', nombre: 'Compras' },
   { id: 'productos', nombre: 'Productos' },
+  { id: 'informes', nombre: 'Informes', soloAdmin: true },
   { id: 'admin', nombre: 'Administración', soloAdmin: true }
 ] as const
 
@@ -128,6 +130,7 @@ function App(): React.JSX.Element {
         {actual.id === 'cuotas' && <Cuotas esAdmin={usuario.rol === 'admin'} />}
         {actual.id === 'compras' && <Compras esAdmin={usuario.rol === 'admin'} />}
         {actual.id === 'productos' && <Productos esAdmin={usuario.rol === 'admin'} />}
+        {actual.id === 'informes' && <Informes />}
         {actual.id === 'admin' && <Administracion yo={usuario} />}
       </main>
     </div>

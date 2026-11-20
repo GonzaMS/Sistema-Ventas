@@ -78,10 +78,18 @@ export function registrarVenta(v: VentaNueva): Venta {
     const renglones = [...cantidades].map(([productoId, cantidad]) => {
       const p = db
         .prepare(
-          'SELECT id, codigo, nombre, stock, precio_venta AS precio FROM productos WHERE id = ? AND activo = 1'
+          'SELECT id, codigo, nombre, stock, precio_venta AS precio, precio_compra AS costo FROM productos WHERE id = ? AND activo = 1'
         )
         .get(productoId) as
-        { id: number; codigo: string; nombre: string; stock: number; precio: number } | undefined
+        | {
+            id: number
+            codigo: string
+            nombre: string
+            stock: number
+            precio: number
+            costo: number
+          }
+        | undefined
       if (!p) throw new Error('Uno de los productos ya no existe')
       if (p.stock < cantidad)
         throw new Error(`No alcanza el stock de ${p.codigo} ${p.nombre}: quedan ${p.stock}`)
@@ -112,12 +120,12 @@ export function registrarVenta(v: VentaNueva): Venta {
     const ventaId = Number(lastInsertRowid)
 
     const insertarItem = db.prepare(
-      `INSERT INTO venta_items (venta_id, producto_id, codigo, nombre, cantidad, precio, subtotal)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO venta_items (venta_id, producto_id, codigo, nombre, cantidad, precio, subtotal, costo)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     )
     const descontar = db.prepare('UPDATE productos SET stock = stock - ? WHERE id = ?')
     for (const r of renglones) {
-      insertarItem.run(ventaId, r.id, r.codigo, r.nombre, r.cantidad, r.precio, r.subtotal)
+      insertarItem.run(ventaId, r.id, r.codigo, r.nombre, r.cantidad, r.precio, r.subtotal, r.costo)
       descontar.run(r.cantidad, r.id)
     }
     if (v.cuotas) crearCuotas(ventaId, v.clienteId as number, total, v.cuotas, v.metodoPago)

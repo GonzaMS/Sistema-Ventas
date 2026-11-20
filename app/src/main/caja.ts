@@ -94,7 +94,7 @@ export function activarCategoria(id: number, activo: boolean): void {
 }
 
 // Lo que debería haber en una caja abierta, calculado desde las ventas y los movimientos.
-function calcularResumen(cajaId: number, montoInicial: number): ResumenMetodo[] {
+export function calcularResumen(cajaId: number, montoInicial: number): ResumenMetodo[] {
   const db = getDb()
   const ventas = db
     .prepare(

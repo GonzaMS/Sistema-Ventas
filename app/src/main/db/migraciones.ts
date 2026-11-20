@@ -313,5 +313,14 @@ export const migraciones: string[] = [
 
   ALTER TABLE movimientos_caja ADD COLUMN devolucion_compra_id INTEGER REFERENCES devoluciones_compra (id);
   INSERT INTO categorias_caja (nombre, tipo, sistema) VALUES ('Devolución de compra', 'ingreso', 1);
+  `,
+
+  // 10. Costo de cada renglón de venta (el precio de compra del producto al vender), para que la
+  // ganancia de los informes no cambie cuando cambia el costo. Las ventas viejas toman el precio de
+  // compra que tenía el producto al aplicar esta migración.
+  `
+  ALTER TABLE venta_items ADD COLUMN costo INTEGER NOT NULL DEFAULT 0 CHECK (costo >= 0);
+  UPDATE venta_items
+    SET costo = (SELECT precio_compra FROM productos p WHERE p.id = venta_items.producto_id);
   `
 ]

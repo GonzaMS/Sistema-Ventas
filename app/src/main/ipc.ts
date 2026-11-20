@@ -7,6 +7,7 @@ import * as caja from './caja'
 import * as cuotas from './cuotas'
 import * as negocio from './negocio'
 import * as compras from './compras'
+import * as informes from './informes'
 import type { Resultado } from '../shared/tipos'
 
 // Todo lo que la interfaz puede pedirle al proceso principal.
@@ -64,6 +65,8 @@ const handlers = {
   listarCompras: compras.listarCompras,
   anularCompra: compras.anularCompra,
   devolverCompra: compras.devolverCompra,
+
+  informe: informes.informe,
 
   datosNegocio: negocio.datosNegocio,
   configuracion: negocio.configuracion,
